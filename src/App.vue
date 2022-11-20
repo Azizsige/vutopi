@@ -2,8 +2,8 @@
   <router-view></router-view>
 </template>
 <script>
-import Login from "./components/Login.vue";
-import SignUp from "./components/SignUp.vue";
+import Login from "./views/Login.vue";
+import SignUp from "./views/SignUp.vue";
 export default {
   components: {
     Login,

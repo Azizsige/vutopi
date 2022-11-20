@@ -95,7 +95,8 @@ export default {
       let results = await axios.get(
         `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}&_embed=todos`
       );
-      if (results.status == 200) {
+      console.log(results);
+      if (results.status == 200 && results.data.length > 0) {
         localStorage.setItem("user", JSON.stringify(results.data));
         this.$router.push({ name: "Index" });
       } else {

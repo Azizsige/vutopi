@@ -1,6 +1,6 @@
-import Index from "./components/Index.vue";
-import Login from "./components/Login.vue";
-import SignUp from "./components/SignUp.vue";
+import Index from "./views/Index.vue";
+import Login from "./views/Login.vue";
+import SignUp from "./views/SignUp.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
 
