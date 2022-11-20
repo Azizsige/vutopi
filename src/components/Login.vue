@@ -93,7 +93,7 @@ export default {
   methods: {
     async login() {
       let results = await axios.get(
-        `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}`
+        `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}&_embed=todos`
       );
       if (results.status == 200) {
         localStorage.setItem("user", JSON.stringify(results.data));
