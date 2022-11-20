@@ -1,17 +1,5 @@
 <template>
-  <div class="container-wrap bg-primary w-[390px] mx-auto min-h-screen">
-    <div class="container">
-      <div class="container-logo">
-        <img src="/ellipse.png" alt="" srcset="" />
-      </div>
-      <div class="container-content w-full">
-        <div class="content w-full">
-          <SignUp />
-          <!-- <router-view></router-view> -->
-        </div>
-      </div>
-    </div>
-  </div>
+  <router-view></router-view>
 </template>
 <script>
 import Login from "./components/Login.vue";
