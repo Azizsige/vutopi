@@ -6,9 +6,10 @@
 
 @layer base {
   #userDropdown {
-    position: absolute;
-    inset: 0px auto auto 0px;
-    margin: 0px;
-    transform: translate(26rem, 54px) !important;
+    position: absolute !important;
+    height: max-content;
+    inset: 0 !important;
+    margin: 4rem 10px 0 auto !important;
+    transform: translate(0) !important;
   }
 }

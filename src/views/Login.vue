@@ -99,6 +99,7 @@ export default {
       if (results.status == 200 && results.data.length > 0) {
         localStorage.setItem("user", JSON.stringify(results.data));
         this.$router.push({ name: "Index" });
+        location.reload();
       } else {
         alert("Invalid Login");
       }
