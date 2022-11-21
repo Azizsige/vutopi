@@ -20,18 +20,22 @@
         </div>
       </div>
       <div class="container-input__item px-10">
-        <div class="max-w-sm p-6 bg-cardTodo flex rounded-lg shadow-md">
+        <div
+          v-for="name in nameTodo"
+          :key="name.id"
+          class="max-w-sm p-6 bg-cardTodo flex justify-between mb-5 rounded-lg shadow-md"
+        >
           <div class="item--name flex items-center">
             <input
               checked
               id="item"
               type="checkbox"
+              v-model="nameTodo"
               value=""
               class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
             <label for="item" class="font-normal px-3 text-white">
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
+              {{ name.name }}
             </label>
           </div>
           <div class="item--options flex items-center">
@@ -74,10 +78,27 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   name: "TodoItem",
   data() {
-    return {};
+    return {
+      nameTodo: [],
+    };
+  },
+  methods: {
+    loadTodoItem() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      // let resulst = await axios.get(
+      //   "https://vutopi-db.herokuapp.com/user?_embed=todos"
+      // );
+      this.nameTodo = user[0].todos[0].nameTodo;
+      console.log(this.nameTodo);
+    },
+  },
+
+  mounted() {
+    this.loadTodoItem();
   },
 };
 </script>
