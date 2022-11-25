@@ -1,11 +1,13 @@
 <template>
   <div class="wrapper">
-    <div class="wrapper-container">
+    <div class="wrapper-container max-h-[90vh] overflow-hidden">
       <div class="container-input__add pt-10 px-10">
         <div class="relative z-0 mb-6 w-full mx-auto group">
           <input
             type="text"
             name="floating_email"
+            v-model="name"
+            @keyup.enter.prevent="addTodo"
             id="floating_email"
             class="block py-2.5 w-full text-sm text-secondary px-3 bg-transparent border-0 border-b-2 border-secondary appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-secondary peer"
             placeholder=" "
@@ -19,7 +21,7 @@
           >
         </div>
       </div>
-      <div class="container-input__item px-10">
+      <div class="container-input__item px-10 h-[73vh] overflow-y-scroll">
         <div
           v-for="name in nameTodo"
           :key="name.id"
@@ -84,21 +86,51 @@ export default {
   data() {
     return {
       nameTodo: [],
+      name: "",
+      id: "",
     };
   },
   methods: {
-    loadTodoItem() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      // let resulst = await axios.get(
-      //   "https://vutopi-db.herokuapp.com/user?_embed=todos"
-      // );
-      this.nameTodo = user[0].todos[0].nameTodo;
-      console.log(this.nameTodo);
+    async getItem() {
+      let todoItem = await axios.get(
+        `https://vutopi-db.herokuapp.com/todos/${this.id}?_embed=nameTodo`
+      );
+      if (todoItem.status == 200) {
+        localStorage.setItem(
+          "todos",
+          JSON.stringify(todoItem.data[this.id - 1].nameTodo)
+        );
+        this.nameTodo = todoItem.data[this.id - 1].nameTodo;
+        console.log(todoItem.data[this.id - 1].nameTodo);
+        // console.log(this.nameTodo);
+      } else {
+        console.log("Something is wrong!");
+      }
+    },
+
+    async addTodo() {
+      let results = await axios.post(
+        `https://vutopi-db.herokuapp.com/nameTodo`,
+        {
+          name: this.name,
+          isDone: false,
+          todoId: this.id,
+        }
+      );
+      console.log(results);
+      console.log(this.id);
+      alert("Data berhasil ditambahkan");
+      location.reload();
     },
   },
 
-  mounted() {
-    this.loadTodoItem();
+  async mounted() {
+    this.getItem();
+    let user = JSON.parse(localStorage.getItem("user"));
+    // let data = JSON.parse(localStorage.getItem("todos"));
+    // this.nameTodo = data;
+    this.id = user.id;
+    console.log(user.id);
   },
 };
 </script>

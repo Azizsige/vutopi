@@ -56,8 +56,8 @@ export default {
 
   mounted() {
     let user = JSON.parse(localStorage.getItem("user"));
-    this.name = this.capitalizedFirstLetter(user[0].name);
-    this.email = user[0].email;
+    this.name = this.capitalizedFirstLetter(user.name);
+    this.email = user.email;
   },
 };
 </script>

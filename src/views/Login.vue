@@ -93,13 +93,20 @@ export default {
   methods: {
     async login() {
       let results = await axios.get(
-        `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}&_embed=todos`
+        `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}`
       );
-      console.log(results);
       if (results.status == 200 && results.data.length > 0) {
-        localStorage.setItem("user", JSON.stringify(results.data));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: results.data[0].id,
+            name: results.data[0].name,
+            email: results.data[0].email,
+          })
+        );
         this.$router.push({ name: "Index" });
         location.reload();
+        console.log(todoItem);
       } else {
         alert("Invalid Login");
       }
