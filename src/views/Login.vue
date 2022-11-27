@@ -1,6 +1,6 @@
 <template>
   <div class="container-wrap bg-primary mx-auto min-h-screen">
-    <div class="container">
+    <div class="container h-screen flex flex-col space-y-[10rem]">
       <div class="container-logo">
         <img src="/ellipse.png" alt="" srcset="" />
       </div>
