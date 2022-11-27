@@ -81,6 +81,7 @@
 </template>
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 export default {
   name: "TodoItem",
   data() {
@@ -109,6 +110,12 @@ export default {
     },
 
     async addTodo() {
+      Swal.fire({
+        icon: "success",
+        title: "Your todo has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       let results = await axios.post(
         `https://vutopi-db.herokuapp.com/nameTodo`,
         {
@@ -117,9 +124,10 @@ export default {
           todoId: this.id,
         }
       );
+
       console.log(results);
       console.log(this.id);
-      alert("Data berhasil ditambahkan");
+      // alert("Data berhasil ditambahkan");
       location.reload();
     },
   },

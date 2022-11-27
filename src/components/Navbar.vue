@@ -36,6 +36,7 @@
   </div>
 </template>
 <script>
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -45,8 +46,21 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.clear();
-      this.$router.push({ name: "Login" });
+      Swal.fire({
+        title: "Are you sure to LogOut ?",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: `Cancel`,
+        allowOutsideClick: false,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          localStorage.clear();
+          this.$router.push({ name: "Login" });
+        } else if (result.isDenied) {
+          Swal.close();
+        }
+      });
     },
 
     capitalizedFirstLetter(name) {

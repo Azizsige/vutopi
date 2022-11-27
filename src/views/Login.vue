@@ -64,7 +64,7 @@
                   @click="login"
                   class="text-white bg-alternate hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
-                  Sign In
+                  {{ loader }}
                 </button>
                 <p class="text-secondary">
                   Don't have an account?
@@ -82,16 +82,26 @@
 </template>
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 export default {
   name: "Login",
   data() {
     return {
       email: "",
       password: "",
+      loader: "Sign In",
     };
   },
   methods: {
     async login() {
+      Swal.fire({
+        title: "Loading",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      // this.loader = "Loading . . .";
       let results = await axios.get(
         `https://vutopi-db.herokuapp.com/user?email=${this.email}&password=${this.password}`
       );
@@ -106,9 +116,14 @@ export default {
         );
         this.$router.push({ name: "Index" });
         location.reload();
-        console.log(todoItem);
+        Swal.close();
       } else {
-        alert("Invalid Login");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+        // alert("Invalid Login");
       }
     },
   },
