@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div class="wrapper-container max-h-[90vh] overflow-hidden">
+    <div class="wrapper-container max-h-screen overflow-hidden">
       <div class="container-input__add pt-10 px-10">
         <div class="relative z-0 mb-6 w-full mx-auto group">
           <input
@@ -21,7 +21,7 @@
           >
         </div>
       </div>
-      <div class="container-input__item px-10 h-[73vh] overflow-y-scroll">
+      <div class="container-input__item px-10 h-screen overflow-y-scroll">
         <div
           v-for="name in nameTodo"
           :key="name.id"
