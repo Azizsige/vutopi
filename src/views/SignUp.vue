@@ -111,20 +111,22 @@ export default {
   },
   methods: {
     async signup() {
-      let results = await axios.post("https://vutopi-db.herokuapp.com/user", {
+      let results = await axios.post("https://vutopi-db.vercel.app/user", {
         email: this.email,
         password: this.password,
         name: this.name,
       });
       if (results.status == 201) {
-        let resultsTodo = await axios.post(
-          "https://vutopi-db.herokuapp.com/todos",
-          {
-            nameTodo: [],
+        await axios
+          .post("https://vutopi-db.vercel.app/todos", {
             userId: results.data.id,
-          }
-        );
-        this.$router.push({ name: "Login" });
+          })
+          .then((results) => {
+            this.$router.push({ name: "Login" });
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
       }
     },
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="container-wrap bg-primary mx-auto min-h-screen">
+  <div class="container-wrap mx-auto min-h-screen">
     <Navbar />
     <TodoItem />
   </div>

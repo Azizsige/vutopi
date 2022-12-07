@@ -1,8 +1,20 @@
 <template>
-  <div class="navbar py-1 bg-alternate w-full flex justify-end relative z-10">
+  <div
+    class="navbar py-1 bg-alternate sm:w-[390px] mx-auto w-full flex justify-end relative z-10"
+  >
     <div class="avatar flex justify-center items-center">
       <div class="avatar-name text-white mr-3">Welcome Back, {{ name }} !</div>
       <div class="avatar-logo">
+        <!-- <img
+          id="avatarButton"
+          type="button"
+          data-dropdown-toggle="userDropdown"
+          data-dropdown-placement="bottom-start"
+          class="w-10 h-10 rounded-full cursor-pointer"
+          src="/docs/images/people/profile-picture-5.jpg"
+          alt="User dropdown"
+        /> -->
+
         <div
           id="avatarButton"
           type="button"

@@ -1,6 +1,8 @@
 <template>
-  <div class="wrapper">
-    <div class="wrapper-container max-h-screen overflow-hidden">
+  <div class="wrapper bg-white">
+    <div
+      class="wrapper-container bg-primary mx-auto w-full sm:w-[390px] max-h-screen overflow-hidden"
+    >
       <div class="container-input__add pt-10 px-10">
         <div class="relative z-0 mb-6 w-full mx-auto group">
           <input
@@ -13,11 +15,12 @@
             placeholder=" "
             autocomplete="off"
             required
+            autofocus
           />
           <label
             for="floating_email"
             class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 left-3 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-3 peer-focus:text-secondary peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8"
-            >Email address</label
+            >Todo</label
           >
         </div>
       </div>
@@ -41,37 +44,41 @@
             </label>
           </div>
           <div class="item--options flex items-center">
-            <div class="edit text-blue-400 mr-2">
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                ></path>
-              </svg>
-            </div>
-            <div class="delete text-red-600">
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                ></path>
-              </svg>
+            <router-link :to="`/update/${name.id}`">
+              <div class="edit text-blue-400 mr-2">
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
+                </svg>
+              </div>
+            </router-link>
+            <div class="deletes text-red-600 hover:cursor-pointer">
+              <button @click="remove(name.id)" type="button">
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -92,21 +99,34 @@ export default {
     };
   },
   methods: {
+    async remove(id) {
+      Swal.fire({
+        icon: "success",
+        title: "Your todo has been delete",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      axios
+        .delete(`https://vutopi-db.vercel.app/nameTodo/${id}`)
+        .then((results) => {
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    },
     async getItem() {
-      let todoItem = await axios.get(
-        `https://vutopi-db.herokuapp.com/todos/${this.id}?_embed=nameTodo`
-      );
-      if (todoItem.status == 200) {
-        localStorage.setItem(
-          "todos",
-          JSON.stringify(todoItem.data[this.id - 1].nameTodo)
-        );
-        this.nameTodo = todoItem.data[this.id - 1].nameTodo;
-        console.log(todoItem.data[this.id - 1].nameTodo);
-        // console.log(this.nameTodo);
-      } else {
-        console.log("Something is wrong!");
-      }
+      let user = JSON.parse(localStorage.getItem("user"));
+      this.id = user.id;
+      await axios
+        .get(`https://vutopi-db.vercel.app/nameTodo?todoId=${user.id}`)
+        .then((results) => {
+          this.nameTodo = results.data;
+          console.log(this.nameTodo);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     },
 
     async addTodo() {
@@ -116,29 +136,25 @@ export default {
         showConfirmButton: false,
         timer: 1500,
       });
-      let results = await axios.post(
-        `https://vutopi-db.herokuapp.com/nameTodo`,
-        {
+      await axios
+        .post(`https://vutopi-db.vercel.app/nameTodo`, {
           name: this.name,
           isDone: false,
           todoId: this.id,
-        }
-      );
-
-      console.log(results);
-      console.log(this.id);
-      // alert("Data berhasil ditambahkan");
-      location.reload();
+        })
+        .then((results) => {
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // location.reload();
     },
   },
 
   async mounted() {
     this.getItem();
-    let user = JSON.parse(localStorage.getItem("user"));
-    // let data = JSON.parse(localStorage.getItem("todos"));
-    // this.nameTodo = data;
-    this.id = user.id;
-    console.log(user.id);
+    console.log(this.nameTodo.id);
   },
 };
 </script>
