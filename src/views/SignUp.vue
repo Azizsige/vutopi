@@ -97,39 +97,81 @@
     </div>
   </div>
 </template>
-<script>
+<script setup>
 import axios from "axios";
 
-export default {
-  name: "Login",
-  data() {
-    return {
-      name: "",
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    async signup() {
-      let results = await axios.post("https://vutopi-db.vercel.app/user", {
-        email: this.email,
-        password: this.password,
-        name: this.name,
-      });
-      if (results.status == 201) {
-        await axios
-          .post("https://vutopi-db.vercel.app/todos", {
-            userId: results.data.id,
-          })
-          .then((results) => {
-            this.$router.push({ name: "Login" });
-          })
-          .catch((err) => {
-            console.log(err.message);
-          });
-      }
-    },
-  },
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+let name = ref("");
+let email = ref("");
+let password = ref("");
+
+const signup = async () => {
+  await axios
+    .post("https://vutopi-db.vercel.app/user", {
+      email: email.value,
+      password: password.value,
+      name: name.value,
+    })
+    .then(async (results) => {
+      await axios
+        .post("https://vutopi-db.vercel.app/todos", {
+          userId: results.data.id,
+        })
+        .then((results) => {
+          router.push({ name: "Login" });
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    });
 };
+
+// return {
+//   name,
+//   email,
+//   password,
+// };
+
+// export default {
+//   name: "Login",
+//   data() {
+//     return {
+//       name: "",
+//       email: "",
+//       password: "",
+//     };
+//   },
+//   methods: {
+//     async signup() {
+//       let results = await axios.post(
+//         "https://vutopi-db.vercel.app/user",
+//         {
+//           email: this.email,
+//           password: this.password,
+//           name: this.name,
+//         }
+//       );
+//       if (results.status == 201) {
+//         await axios
+//           .post(
+//             "https://vutopi-db.vercel.app/todos",
+//             {
+//               userId: results.data.id,
+//             }
+//           )
+//           .then((results) => {
+//             this.$router.push({ name: "Login" });
+//           })
+//           .catch((err) => {
+//             console.log(err.message);
+//           });
+//       }
+//     },
+//   },
+// };
 </script>
 <style></style>
