@@ -37,44 +37,42 @@
     </div>
   </div>
 </template>
-<script>
+<script setup>
 import Swal from "sweetalert2";
-export default {
-  data() {
-    return {
-      name: "",
-      email: "",
-    };
-  },
-  methods: {
-    logout() {
-      Swal.fire({
-        title: "Are you sure to Logout ?",
-        showDenyButton: true,
-        confirmButtonText: "Yes",
-        denyButtonText: `Cancel`,
-        allowOutsideClick: false,
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          localStorage.clear();
-          this.$router.push({ name: "Login" });
-        } else if (result.isDenied) {
-          Swal.close();
-        }
-      });
-    },
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-    capitalizedFirstLetter(name) {
-      return name.charAt(0).toUpperCase() + name.slice(1);
-    },
-  },
+const router = useRouter();
 
-  mounted() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    this.name = this.capitalizedFirstLetter(user.name);
-    this.email = user.email;
-  },
+let name = ref("");
+let email = ref("");
+
+const logout = async () => {
+  Swal.fire({
+    title: "Are you sure to Logout ?",
+    showDenyButton: true,
+    confirmButtonText: "Yes",
+    denyButtonText: `Cancel`,
+    allowOutsideClick: false,
+  }).then((result) => {
+    /* Read more about isConfirmed, isDenied below */
+    if (result.isConfirmed) {
+      localStorage.clear();
+      router.push({ name: "Login" });
+    } else if (result.isDenied) {
+      Swal.close();
+    }
+  });
 };
+
+const capitalizedFirstLetter = (name) => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+onMounted(() => {
+  let user = JSON.parse(localStorage.getItem("user"));
+  name.value = capitalizedFirstLetter(user.name);
+  email.value = user.email;
+});
 </script>
 <style></style>

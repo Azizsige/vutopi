@@ -24,9 +24,11 @@
           >
         </div>
       </div>
-      <div class="container-input__item px-10 h-screen overflow-y-scroll">
+      <div
+        class="container-input__item px-10 h-screen overflow-y-scroll mx-auto"
+      >
         <div
-          v-for="name in nameTodo"
+          v-for="name in nameTodo.value"
           :key="name.id"
           class="max-w-sm p-6 bg-cardTodo flex justify-between mb-5 rounded-lg shadow-md"
         >
@@ -86,76 +88,77 @@
     </div>
   </div>
 </template>
-<script>
+<script setup>
 import axios from "axios";
 import Swal from "sweetalert2";
-export default {
-  name: "TodoItem",
-  data() {
-    return {
-      nameTodo: [],
-      name: "",
-      id: "",
-    };
-  },
-  methods: {
-    async remove(id) {
-      Swal.fire({
-        icon: "success",
-        title: "Your todo has been delete",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      axios
-        .delete(`https://vutopi-db.vercel.app/nameTodo/${id}`)
-        .then((results) => {
-          location.reload();
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    },
-    async getItem() {
-      let user = JSON.parse(localStorage.getItem("user"));
-      this.id = user.id;
-      await axios
-        .get(`https://vutopi-db.vercel.app/nameTodo?todoId=${user.id}`)
-        .then((results) => {
-          this.nameTodo = results.data;
-          console.log(this.nameTodo);
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    },
+import Loader from "./Loader.vue";
 
-    async addTodo() {
-      Swal.fire({
-        icon: "success",
-        title: "Your todo has been saved",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      await axios
-        .post(`https://vutopi-db.vercel.app/nameTodo`, {
-          name: this.name,
-          isDone: false,
-          todoId: this.id,
-        })
-        .then((results) => {
-          location.reload();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+let name = ref("");
+let id = ref("");
+let show = ref("false");
+const nameTodo = reactive({});
+
+const addTodo = async () => {
+  Swal.fire({
+    icon: "success",
+    title: "Your todo has been saved",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+  await axios
+    .post(`https://vutopi-db.vercel.app/nameTodo`, {
+      name: name.value,
+      isDone: false,
+      todoId: id.value,
+    })
+    .then(async (results) => {
+      await getItem();
+      name.value = "";
       // location.reload();
-    },
-  },
-
-  async mounted() {
-    this.getItem();
-    console.log(this.nameTodo.id);
-  },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
+
+const getItem = async () => {
+  let user = JSON.parse(localStorage.getItem("user"));
+  id.value = user.id;
+  show.value = "true";
+  await axios
+    .get(`https://vutopi-db.vercel.app/nameTodo?todoId=${user.id}`)
+    .then((results) => {
+      nameTodo.value = results.data;
+      show.value = "false";
+      console.log(show.value);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
+
+const remove = async (id) => {
+  Swal.fire({
+    icon: "success",
+    title: "Your todo has been delete",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+  await axios
+    .delete(`https://vutopi-db.vercel.app/nameTodo/${id}`)
+    .then((results) => {
+      location.reload();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
+
+onMounted(async () => {
+  await getItem();
+});
 </script>
 <style></style>

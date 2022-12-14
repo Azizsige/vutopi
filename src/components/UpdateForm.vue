@@ -5,29 +5,18 @@
       class="wrapper-container bg-primary mx-auto w-full sm:w-[390px] min-h-screen overflow-hidden"
     >
       <div class="content-form mx-5 min-h-screen pb-2 pt-5">
-        <form @submit.prevent="update(todos.id)">
+        <form @submit.prevent="update(todos.value.id)">
           <div class="mb-6">
             <label for="name" class="block mb-2 text-sm font-medium text-white"
               >Name</label
             >
             <input
-              v-if="todos.length != 0"
               type="text"
               autofocus
               id="name"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Enter your full name"
-              v-model="todos.name"
-              required
-            />
-            <input
-              v-else
-              type="text"
-              autofocus
-              id="name"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Enter your full name"
-              v-model="todos.name"
+              v-model="todos.value.name"
               required
             />
           </div>
@@ -47,7 +36,7 @@
   </div>
 </template>
 <script setup>
-import Navbar from "./../components/Navbar.vue";
+import Navbar from "./Navbar.vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -58,12 +47,7 @@ const route = useRoute();
 const router = useRouter();
 
 let idParams = ref(parseInt(route.params.id));
-let todos = reactive({
-  id: ref(),
-  name: ref(),
-  todoId: ref(),
-  isDone: ref(),
-});
+let todos = reactive([]);
 
 const update = async (id) => {
   Swal.fire({
@@ -74,9 +58,9 @@ const update = async (id) => {
   });
   await axios
     .put(`https://vutopi-db.vercel.app/nameTodo/${id}`, {
-      name: todos.name,
-      todoId: todos.todoId,
-      isDone: todos.isDone,
+      name: todos.value.name,
+      todoId: todos.value.todoId,
+      isDone: todos.value.isDone,
     })
     .then((results) => {
       console.log(results);
@@ -87,19 +71,20 @@ const update = async (id) => {
     });
 };
 
-onMounted(async () => {
+const getItem = async () => {
   await axios
     .get(`https://vutopi-db.vercel.app/nameTodo/${idParams.value}`)
     .then((results) => {
-      todos.id = results.data.id;
-      todos.name = results.data.name;
-      todos.todoId = results.data.todoId;
-      todos.isDone = results.data.isDone;
-      console.log(todos.name);
+      todos.value = results.data;
+      console.log(todos.value);
     })
     .catch((err) => {
       console.log(err.message);
     });
+};
+
+onMounted(async () => {
+  await getItem;
 });
 </script>
 <style lang=""></style>

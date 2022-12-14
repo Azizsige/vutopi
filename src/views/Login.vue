@@ -67,7 +67,7 @@
                     @click="login"
                     class="text-white bg-alternate hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   >
-                    {{ loader }}
+                    Login
                   </button>
                   <p class="text-secondary">
                     Don't have an account?
@@ -84,57 +84,55 @@
     </div>
   </div>
 </template>
-<script>
+<script setup>
 import axios from "axios";
 import Swal from "sweetalert2";
-export default {
-  name: "Login",
-  data() {
-    return {
-      email: "",
-      password: "",
-      loader: "Sign In",
-    };
-  },
-  methods: {
-    async login() {
-      Swal.fire({
-        title: "Loading",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      let results = await axios.get(
-        `https://vutopi-db.vercel.app/user?email=${this.email}&password=${this.password}`
-      );
-      if (results.status == 200 && results.data.length > 0) {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            id: results.data[0].id,
-            name: results.data[0].name,
-            email: results.data[0].email,
-          })
-        );
-        this.$router.push({ name: "Index" });
-        location.reload();
-        Swal.close();
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-      }
+
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+let email = ref("");
+let password = ref("");
+
+const login = async () => {
+  Swal.fire({
+    title: "Loading",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
     },
-  },
-  mounted() {
-    let user = localStorage.getItem("user");
-    if (user) {
-      this.$router.push({ name: "Index" });
-    }
-  },
+  });
+  let results = await axios.get(
+    `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
+  );
+  if (results.status == 200 && results.data.length > 0) {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: results.data[0].id,
+        name: results.data[0].name,
+        email: results.data[0].email,
+      })
+    );
+    router.push({ name: "Index" });
+    location.reload();
+    Swal.close();
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+  }
 };
+
+onMounted(() => {
+  let user = localStorage.getItem("user");
+  if (user) {
+    router.push({ name: "Index" });
+  }
+});
 </script>
 <style></style>
