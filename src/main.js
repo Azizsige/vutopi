@@ -1,6 +1,8 @@
 import { createApp } from "vue";
 import "./style.css";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
+// import pinia
+import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router.js";
@@ -12,4 +14,5 @@ createApp(App)
   .use(router)
   .use(VueSweetalert2)
   .use(autoAnimatePlugin)
+  .use(createPinia())
   .mount("#app");

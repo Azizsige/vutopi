@@ -100,10 +100,12 @@
 <script setup>
 import axios from "axios";
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+// import { useIndex } from "../store/index";
 
 const router = useRouter();
+// const store = useIndex();
 
 let name = ref("");
 let email = ref("");
@@ -130,48 +132,11 @@ const signup = async () => {
     });
 };
 
-// return {
-//   name,
-//   email,
-//   password,
-// };
-
-// export default {
-//   name: "Login",
-//   data() {
-//     return {
-//       name: "",
-//       email: "",
-//       password: "",
-//     };
-//   },
-//   methods: {
-//     async signup() {
-//       let results = await axios.post(
-//         "https://vutopi-db.vercel.app/user",
-//         {
-//           email: this.email,
-//           password: this.password,
-//           name: this.name,
-//         }
-//       );
-//       if (results.status == 201) {
-//         await axios
-//           .post(
-//             "https://vutopi-db.vercel.app/todos",
-//             {
-//               userId: results.data.id,
-//             }
-//           )
-//           .then((results) => {
-//             this.$router.push({ name: "Login" });
-//           })
-//           .catch((err) => {
-//             console.log(err.message);
-//           });
-//       }
-//     },
-//   },
-// };
+onMounted(() => {
+  let user = JSON.parse(localStorage.getItem("user"));
+  if (window.localStorage.length > 0 && user.isLogin == true) {
+    router.push({ name: "Index" });
+  }
+});
 </script>
 <style></style>

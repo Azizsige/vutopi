@@ -134,7 +134,7 @@ const getItem = async () => {
     .then((results) => {
       nameTodo.value = results.data;
 
-      console.log(show.value);
+      console.log(nameTodo.value);
     })
     .catch((err) => {
       console.log(err.message);

@@ -1,11 +1,7 @@
 <template>
   <div class="wrapper bg-white">
-    <div
-      class="container-wrap bg-primary w-full sm:w-[390px] mx-auto h-[max-content] min-h-screen max-h-[161vh]"
-    >
-      <div
-        class="container h-[max-content] min-h-screen max-h-[161vh] flex flex-col space-y-[2rem] xl:space-y-[10rem]"
-      >
+    <div class="container-wrap bg-primary w-full sm:w-[390px] mx-auto">
+      <div class="container flex flex-col space-y-[2rem] xl:space-y-[10rem]">
         <div class="container-logo">
           <img src="/ellipse.png" alt="" srcset="" />
         </div>
@@ -92,8 +88,11 @@ import Swal from "sweetalert2";
 
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+// import store pinia from
+import { useStore } from "./../store/index";
 
 const router = useRouter();
+const store = useStore();
 
 let email = ref("");
 let password = ref("");
@@ -110,16 +109,18 @@ const login = async () => {
     `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
   );
   if (results.status == 200 && results.data.length > 0) {
+    store.$state.id = results.data[0].id;
+    store.$state.name = results.data[0].name;
+    store.$state.email = results.data[0].email;
+    store.$state.isLogin = true;
     localStorage.setItem(
       "user",
       JSON.stringify({
-        id: results.data[0].id,
-        name: results.data[0].name,
-        email: results.data[0].email,
+        isLogin: store.$state.isLogin,
       })
     );
     router.push({ name: "Index" });
-    location.reload();
+    // location.reload();
     Swal.close();
   } else {
     Swal.fire({
@@ -131,9 +132,11 @@ const login = async () => {
 };
 
 onMounted(() => {
-  let user = localStorage.getItem("user");
-  if (user) {
+  let user = JSON.parse(localStorage.getItem("user"));
+  if (window.localStorage.length > 0 && user.isLogin == true) {
     router.push({ name: "Index" });
+  } else {
+    router.push({ name: "Login" });
   }
 });
 </script>

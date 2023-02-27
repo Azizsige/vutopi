@@ -17,24 +17,19 @@ import TodoItem from "./../components/TodoItem.vue";
 
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "./../store/index";
 
+const stores = useStore();
 const router = useRouter();
 
-const pending = () => {
-  console.log("pending");
-};
-const fallback = () => {
-  console.log("fallback");
-};
-const resolved = () => {
-  console.log("resolve");
-};
-
 onMounted(() => {
-  let user = localStorage.getItem("user");
-  if (!user) {
-    router.push({ name: "Login" });
-  }
+  // let user = JSON.parse(localStorage.getItem("user"));
+  // if (window.localStorage.length == 0) {
+  //   router.push({ name: "Login" });
+  // } else {
+  //   router.push({ name: "Index" });
+  // }
+  console.log(stores.$state.isLogin.value);
 });
 </script>
 <style></style>
