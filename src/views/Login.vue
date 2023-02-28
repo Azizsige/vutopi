@@ -1,10 +1,10 @@
 <template>
   <div class="wrapper bg-white">
     <div
-      class="container-wrap bg-primary w-full sm:w-[390px] mx-auto h-[max-content] min-h-screen max-h-[161vh]"
+      class="container-wrap bg-primary w-full sm:w-[390px] mx-auto max-h-auto min-h-screen"
     >
       <div
-        class="container h-[max-content] min-h-screen max-h-[161vh] flex flex-col space-y-[2rem] xl:space-y-[10rem]"
+        class="container max-h-auto flex flex-col space-y-[2rem] xl:space-y-[10rem] min-h-screen"
       >
         <div class="container-logo">
           <img src="/ellipse.png" alt="" srcset="" />
