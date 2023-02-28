@@ -41,10 +41,8 @@
 import Swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "./../store/index";
 
 const router = useRouter();
-const store = useStore();
 
 let name = ref("");
 let email = ref("");
@@ -61,6 +59,7 @@ const logout = async () => {
     if (result.isConfirmed) {
       localStorage.clear();
       router.push({ name: "Login" });
+      // location.reload();
     } else if (result.isDenied) {
       Swal.close();
     }
@@ -72,9 +71,9 @@ const capitalizedFirstLetter = (name) => {
 };
 
 onMounted(() => {
-  // let user = JSON.parse(localStorage.getItem("user"));
-  // name.value = capitalizedFirstLetter(user.name);
-  // email.value = user.email;
+  let user = JSON.parse(localStorage.getItem("user"));
+  name.value = capitalizedFirstLetter(user.name);
+  email.value = user.email;
 });
 </script>
 <style></style>

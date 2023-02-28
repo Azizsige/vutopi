@@ -50,34 +50,67 @@
                   class="block mb-2 text-sm font-medium text-white"
                   >Password</label
                 >
-                <input
-                  type="password"
-                  id="password"
-                  v-model="password"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Enter your password"
-                  required
-                />
+                <div class="inputs relative">
+                  <input
+                    :type="
+                      (passwordFieldType = showPassword ? 'text' : 'password')
+                    "
+                    id="Password"
+                    v-model="password"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    class="toggle-show absolute top-2 right-3 hover:cursor-pointer"
+                    @click.prevent="toggleShowPassword"
+                  >
+                    <font-awesome-icon
+                      :icon="
+                        (iconType = showPassword
+                          ? 'fas fa-eye'
+                          : 'fas fa-eye-slash')
+                      "
+                    />
+                  </button>
+                </div>
               </div>
               <div class="mb-6">
                 <label
                   for="ConfirmPassword"
                   class="block mb-2 text-sm font-medium text-white"
-                  >Confirm Password</label
-                >
-                <input
-                  type="password"
-                  id="ConfirmPassword"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
-                  placeholder="re-enter your password"
-                />
+                  >Confirm Password
+                </label>
+                <div class="inputs relative">
+                  <input
+                    :type="
+                      (passwordFieldType = showConfirm ? 'text' : 'password')
+                    "
+                    id="ConfirmPassword"
+                    v-model="ConfirmPassword"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                    placeholder="Confirm your password"
+                  />
+                  <div
+                    class="toggle-show absolute top-2 right-3 hover:cursor-pointer"
+                    @click.prevent="toggleShowConfirm"
+                  >
+                    <font-awesome-icon
+                      :icon="
+                        (iconType = showConfirm
+                          ? 'fas fa-eye'
+                          : 'fas fa-eye-slash')
+                      "
+                    />
+                  </div>
+                </div>
               </div>
               <div class="form-button text-center">
                 <div class="form-button text-center">
                   <button
                     type="button"
-                    @click="signup"
+                    @click="checkValidation"
                     class="text-white bg-alternate hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   >
                     Sign Up
@@ -102,16 +135,144 @@ import axios from "axios";
 
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-// import { useIndex } from "../store/index";
+import Swal from "sweetalert2";
+
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
-// const store = useIndex();
+const toast = useToast();
 
 let name = ref("");
 let email = ref("");
 let password = ref("");
+let ConfirmPassword = ref("");
+let showPassword = ref(false);
+let showConfirm = ref(false);
+let iconType = ref("");
+
+const emailRegex =
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+// toggle password visibility
+const toggleShowPassword = () => {
+  showPassword.value = !showPassword.value;
+};
+const toggleShowConfirm = () => {
+  showConfirm.value = !showConfirm.value;
+};
+
+const checkValidation = () => {
+  if (
+    name.value == "" &&
+    email.value == "" &&
+    password.value == "" &&
+    ConfirmPassword.value == ""
+  ) {
+    toast.error("Form must be filled", {
+      position: "top-right",
+      timeout: 2000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  } else if (name.value == "") {
+    toast.error("Name must be filled", {
+      position: "top-right",
+      timeout: 2000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  } else if (password.value != ConfirmPassword.value) {
+    toast.error("Password and Confirm Password must be same", {
+      position: "top-right",
+      timeout: 2000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+    console.log(`password ${password.value}, confirm ${ConfirmPassword.value}`);
+  } else if (password.value.length < 8) {
+    toast.error("Password must be 8 character", {
+      position: "top-right",
+      timeout: 2000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: false,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  } else {
+    if (emailRegex.test(email.value)) {
+      signup();
+    } else if (email.value == "") {
+      toast.error("Email must be filled", {
+        position: "top-right",
+        timeout: 2000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
+      });
+    } else {
+      toast.error("Email is not valid", {
+        position: "top-right",
+        timeout: 2000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: false,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
+      });
+    }
+  }
+};
 
 const signup = async () => {
+  Swal.fire({
+    title: "Loading",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   await axios
     .post("https://vutopi-db.vercel.app/user", {
       email: email.value,
@@ -124,6 +285,11 @@ const signup = async () => {
           userId: results.data.id,
         })
         .then((results) => {
+          Swal.fire({
+            icon: "success",
+            title: "Kamu berhasil mendaftar",
+            text: "Silahkan login untuk melanjutkan",
+          });
           router.push({ name: "Login" });
         })
         .catch((err) => {
@@ -133,8 +299,8 @@ const signup = async () => {
 };
 
 onMounted(() => {
-  let user = JSON.parse(localStorage.getItem("user"));
-  if (window.localStorage.length > 0 && user.isLogin == true) {
+  let user = localStorage.getItem("user");
+  if (user) {
     router.push({ name: "Index" });
   }
 });

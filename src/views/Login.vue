@@ -1,7 +1,11 @@
 <template>
   <div class="wrapper bg-white">
-    <div class="container-wrap bg-primary w-full sm:w-[390px] mx-auto">
-      <div class="container flex flex-col space-y-[2rem] xl:space-y-[10rem]">
+    <div
+      class="container-wrap bg-primary w-full sm:w-[390px] mx-auto h-[max-content] min-h-screen max-h-[161vh]"
+    >
+      <div
+        class="container h-[max-content] min-h-screen max-h-[161vh] flex flex-col space-y-[2rem] xl:space-y-[10rem]"
+      >
         <div class="container-logo">
           <img src="/ellipse.png" alt="" srcset="" />
         </div>
@@ -88,11 +92,8 @@ import Swal from "sweetalert2";
 
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-// import store pinia from
-import { useStore } from "./../store/index";
 
 const router = useRouter();
-const store = useStore();
 
 let email = ref("");
 let password = ref("");
@@ -105,20 +106,25 @@ const login = async () => {
       Swal.showLoading();
     },
   });
+
   let results = await axios.get(
     `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
   );
   if (results.status == 200 && results.data.length > 0) {
-    store.$state.id = results.data[0].id;
-    store.$state.name = results.data[0].name;
-    store.$state.email = results.data[0].email;
-    store.$state.isLogin = true;
     localStorage.setItem(
       "user",
       JSON.stringify({
-        isLogin: store.$state.isLogin,
+        id: results.data[0].id,
+        name: results.data[0].name,
+        email: results.data[0].email,
+        isLogin: true,
       })
     );
+    Swal.fire({
+      icon: "success",
+      title: "Kamu Berhasil Login",
+      text: `Selamat datang ${results.data[0].name}`,
+    });
     router.push({ name: "Index" });
     // location.reload();
     Swal.close();
@@ -126,17 +132,15 @@ const login = async () => {
     Swal.fire({
       icon: "error",
       title: "Oops...",
-      text: "Something went wrong!",
+      text: "Sepertinya ada yang salah, coba lagi ya!",
     });
   }
 };
 
 onMounted(() => {
-  let user = JSON.parse(localStorage.getItem("user"));
-  if (window.localStorage.length > 0 && user.isLogin == true) {
+  let user = localStorage.getItem("user");
+  if (user) {
     router.push({ name: "Index" });
-  } else {
-    router.push({ name: "Login" });
   }
 });
 </script>

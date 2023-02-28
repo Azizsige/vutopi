@@ -1,8 +1,10 @@
 import { createApp } from "vue";
 import "./style.css";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
-// import pinia
-import { createPinia } from "pinia";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
 
 import App from "./App.vue";
 import router from "./router.js";
@@ -10,9 +12,17 @@ import router from "./router.js";
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+library.add(faEye, faEyeSlash);
+
 createApp(App)
   .use(router)
   .use(VueSweetalert2)
   .use(autoAnimatePlugin)
-  .use(createPinia())
+  .use(Toast, {
+    transition: "Vue-Toastification__bounce",
+    maxToasts: 3,
+    newestOnTop: true,
+  })
+  .component("font-awesome-icon", FontAwesomeIcon)
   .mount("#app");
