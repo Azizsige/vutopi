@@ -1,5 +1,7 @@
 <template>
-  <div class="container-wrap bg-primary w-[390px] mx-auto min-h-screen">
+  <div
+    class="container-wrap bg-primary w-full sm:w-[390px] mx-auto min-h-screen"
+  >
     <div class="container">
       <div class="container-logo">
         <img src="/ellipse.png" alt="" srcset="" />
