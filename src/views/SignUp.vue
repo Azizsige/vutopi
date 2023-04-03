@@ -137,6 +137,13 @@ import axios from "axios";
 
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import {
+  db,
+  auth,
+  createUserWithEmailAndPassword,
+  doc,
+  setDoc,
+} from "../firebase/index";
 import Swal from "sweetalert2";
 
 import { useToast } from "vue-toastification";
@@ -232,7 +239,7 @@ const checkValidation = () => {
     });
   } else {
     if (emailRegex.test(email.value)) {
-      signup();
+      signup(email.value, password.value);
     } else if (email.value == "") {
       toast.error("Email must be filled", {
         position: "top-right",
@@ -267,7 +274,8 @@ const checkValidation = () => {
   }
 };
 
-const signup = async () => {
+// buatkan function signup firebase
+const signup = async (email, password) => {
   Swal.fire({
     title: "Loading",
     allowOutsideClick: false,
@@ -275,30 +283,66 @@ const signup = async () => {
       Swal.showLoading();
     },
   });
-  await axios
-    .post("https://vutopi-db.vercel.app/user", {
-      email: email.value,
-      password: password.value,
-      name: name.value,
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      console.log(user.uid);
+      console.log(user);
+      setDoc(doc(db, "users", user.uid), {
+        name: name.value,
+        email: user.email,
+        country: "USA",
+        todos: {},
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Kamu berhasil mendaftar",
+        text: "Silahkan login untuk melanjutkan",
+      });
+      router.push({ name: "Login" });
+      // ...
     })
-    .then(async (results) => {
-      await axios
-        .post("https://vutopi-db.vercel.app/todos", {
-          userId: results.data.id,
-        })
-        .then((results) => {
-          Swal.fire({
-            icon: "success",
-            title: "Kamu berhasil mendaftar",
-            text: "Silahkan login untuk melanjutkan",
-          });
-          router.push({ name: "Login" });
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ..
     });
 };
+
+// const signup = async () => {
+//   Swal.fire({
+//     title: "Loading",
+//     allowOutsideClick: false,
+//     didOpen: () => {
+//       Swal.showLoading();
+//     },
+//   });
+//   await axios
+//     .post("https://vutopi-db.vercel.app/user", {
+//       email: email.value,
+//       password: password.value,
+//       name: name.value,
+//     })
+//     .then(async (results) => {
+//       await axios
+//         .post("https://vutopi-db.vercel.app/todos", {
+//           userId: results.data.id,
+//         })
+//         .then((results) => {
+//           Swal.fire({
+//             icon: "success",
+//             title: "Kamu berhasil mendaftar",
+//             text: "Silahkan login untuk melanjutkan",
+//           });
+//           router.push({ name: "Login" });
+//         })
+//         .catch((err) => {
+//           console.log(err.message);
+//         });
+//     });
+// };
 
 onMounted(() => {
   let user = localStorage.getItem("user");
