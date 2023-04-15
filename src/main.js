@@ -8,6 +8,8 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 
 import App from "./App.vue";
 import router from "./router.js";
+import { createPinia } from "pinia";
+const pinia = createPinia();
 
 import VueSweetalert2 from "vue-sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -17,6 +19,7 @@ library.add(faEye, faEyeSlash);
 
 createApp(App)
   .use(router)
+  .use(pinia)
   .use(VueSweetalert2)
   .use(autoAnimatePlugin)
   .use(Toast, {

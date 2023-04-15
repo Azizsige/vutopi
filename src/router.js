@@ -4,6 +4,7 @@ import SignUp from "./views/SignUp.vue";
 import Update from "./views/Update.vue";
 
 import { createRouter, createWebHistory } from "vue-router";
+import { useStore } from "./store";
 
 const routes = [
   {
@@ -34,17 +35,24 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  // const user = JSON.parse(localStorage.getItem("user"));
+  const store = useStore();
 
-  if (
-    to.name !== "Login" &&
-    to.name !== "SignUp" &&
-    window.localStorage.length == 0
-  ) {
+  if (to.name !== "Login" && to.name !== "SignUp" && store.isLogin !== true) {
     next({ name: "Login" });
   } else {
     next();
   }
+
+  // if (
+  //   to.name !== "Login" &&
+  //   to.name !== "SignUp" &&
+  //   window.localStorage.length == 0
+  // ) {
+  //   next({ name: "Login" });
+  // } else {
+  //   next();
+  // }
 });
 
 export default router;

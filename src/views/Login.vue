@@ -66,7 +66,7 @@
                 <div class="form-button text-center">
                   <button
                     type="button"
-                    @click="login"
+                    @click="login(email, password)"
                     class="text-white bg-alternate hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-full px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   >
                     Login
@@ -92,13 +92,22 @@ import Swal from "sweetalert2";
 
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "./../store/index";
+import {
+  db,
+  auth,
+  signInWithEmailAndPassword,
+  doc,
+  setDoc,
+} from "../firebase/index";
 
 const router = useRouter();
+const store = useStore();
 
 let email = ref("");
 let password = ref("");
 
-const login = async () => {
+const login = async (email, password) => {
   Swal.fire({
     title: "Loading",
     allowOutsideClick: false,
@@ -106,42 +115,95 @@ const login = async () => {
       Swal.showLoading();
     },
   });
+  const loginAuth = auth;
+  signInWithEmailAndPassword(loginAuth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      console.log(user);
+      store.name = user.displayName;
+      store.email = user.email;
+      store.isLogin = true;
+      // router.push({ name: "Index" });
+      // Swal.close();
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
 
-  let results = await axios.get(
-    `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
-  );
-  if (results.status == 200 && results.data.length > 0) {
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: results.data[0].id,
-        name: results.data[0].name,
-        email: results.data[0].email,
-        isLogin: true,
-      })
-    );
-    Swal.fire({
-      icon: "success",
-      title: "Kamu Berhasil Login",
-      text: `Selamat datang ${results.data[0].name}`,
+      if (errorCode == "auth/wrong-password") {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Password Salah",
+        });
+      } else if (errorCode == "auth/user-not-found") {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Email Tidak Terdaftar",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Email dan Password tidak boleh kosong",
+        });
+      }
     });
-    router.push({ name: "Index" });
-    // location.reload();
-    Swal.close();
-  } else {
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Sepertinya ada yang salah, coba lagi ya!",
-    });
-  }
 };
 
+// const login = async () => {
+//   Swal.fire({
+//     title: "Loading",
+//     allowOutsideClick: false,
+//     didOpen: () => {
+//       Swal.showLoading();
+//     },
+//   });
+
+//   let results = await axios.get(
+//     `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
+//   );
+//   if (results.status == 200 && results.data.length > 0) {
+//     localStorage.setItem(
+//       "user",
+//       JSON.stringify({
+//         id: results.data[0].id,
+//         name: results.data[0].name,
+//         email: results.data[0].email,
+//         isLogin: true,
+//       })
+//     );
+//     Swal.fire({
+//       icon: "success",
+//       title: "Kamu Berhasil Login",
+//       text: `Selamat datang ${results.data[0].name}`,
+//     });
+//     router.push({ name: "Index" });
+//     // location.reload();
+//     Swal.close();
+//   } else {
+//     Swal.fire({
+//       icon: "error",
+//       title: "Oops...",
+//       text: "Sepertinya ada yang salah, coba lagi ya!",
+//     });
+//   }
+// };
+
 onMounted(() => {
-  let user = localStorage.getItem("user");
-  if (user) {
+  if (store.isLogin) {
     router.push({ name: "Index" });
+  } else {
+    router.push({ name: "Login" });
   }
+  // login(email.value, password.value);
+  // let user = localStorage.getItem("user");
+  // if (user) {
+  //   router.push({ name: "Index" });
+  // }
 });
 </script>
 <style></style>
