@@ -99,6 +99,10 @@ import {
   signInWithEmailAndPassword,
   doc,
   setDoc,
+  query,
+  where,
+  getDocs,
+  collection,
 } from "../firebase/index";
 
 const router = useRouter();
@@ -109,95 +113,71 @@ let password = ref("");
 
 const login = async (email, password) => {
   Swal.fire({
-    title: "Loading",
+    title: "Please Wait...",
     allowOutsideClick: false,
     didOpen: () => {
       Swal.showLoading();
     },
   });
-  const loginAuth = auth;
-  signInWithEmailAndPassword(loginAuth, email, password)
+  // login with query firebase
+  signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", userCredential.user.email)
+      );
+      getDocs(q).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          store.name = doc.data().name;
+          store.email = doc.data().email;
+          store.isLogin = true;
+          Swal.close();
+          router.push({ name: "Index" });
+        });
+      });
+
+      // store.login();
+      // location.reload();
       // Signed in
-      const user = userCredential.user;
-      console.log(user);
-      store.name = user.displayName;
-      store.email = user.email;
-      store.isLogin = true;
-      // router.push({ name: "Index" });
-      // Swal.close();
-      // ...
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-
       if (errorCode == "auth/wrong-password") {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Password Salah",
+          text: "Wrong password!",
         });
       } else if (errorCode == "auth/user-not-found") {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Email Tidak Terdaftar",
+          text: "User not found!",
         });
       } else {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Email dan Password tidak boleh kosong",
+          text: errorMessage,
         });
       }
     });
 };
 
-// const login = async () => {
-//   Swal.fire({
-//     title: "Loading",
-//     allowOutsideClick: false,
-//     didOpen: () => {
-//       Swal.showLoading();
-//     },
-//   });
-
-//   let results = await axios.get(
-//     `https://vutopi-db.vercel.app/user?email=${email.value}&password=${password.value}`
-//   );
-//   if (results.status == 200 && results.data.length > 0) {
-//     localStorage.setItem(
-//       "user",
-//       JSON.stringify({
-//         id: results.data[0].id,
-//         name: results.data[0].name,
-//         email: results.data[0].email,
-//         isLogin: true,
-//       })
-//     );
-//     Swal.fire({
-//       icon: "success",
-//       title: "Kamu Berhasil Login",
-//       text: `Selamat datang ${results.data[0].name}`,
-//     });
-//     router.push({ name: "Index" });
-//     // location.reload();
-//     Swal.close();
-//   } else {
-//     Swal.fire({
-//       icon: "error",
-//       title: "Oops...",
-//       text: "Sepertinya ada yang salah, coba lagi ya!",
-//     });
-//   }
-// };
-
-onMounted(() => {
-  if (store.isLogin) {
+// check if localsotrage is exist with async await
+const checkLocalStorage = async () => {
+  let user = localStorage.getItem("store");
+  if (user) {
     router.push({ name: "Index" });
+  }
+};
+
+onMounted(async () => {
+  if (store.isLogin) {
+    await router.push({ name: "Index" });
   } else {
-    router.push({ name: "Login" });
+    await router.push({ name: "Login" });
   }
   // login(email.value, password.value);
   // let user = localStorage.getItem("user");

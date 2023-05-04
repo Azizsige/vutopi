@@ -31,7 +31,7 @@ const resolved = () => {
 };
 
 onMounted(() => {
-  let user = localStorage.getItem("user");
+  let user = localStorage.getItem("store");
   if (!user) {
     router.push({ name: "Login" });
   }

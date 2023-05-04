@@ -15,7 +15,7 @@
             </p>
           </div>
           <div class="content-form mx-5 pb-2 pt-5">
-            <form>
+            <form @submit.prevent="checkValidation">
               <div class="mb-6">
                 <label
                   for="name"
@@ -145,13 +145,15 @@ import {
   setDoc,
 } from "../firebase/index";
 import Swal from "sweetalert2";
-
 import { useToast } from "vue-toastification";
+import { useStore } from "./../store/index";
 
 const router = useRouter();
 const toast = useToast();
+const store = useStore();
 
 let name = ref("");
+let id = ref(0);
 let email = ref("");
 let password = ref("");
 let ConfirmPassword = ref("");
@@ -283,16 +285,18 @@ const signup = async (email, password) => {
       Swal.showLoading();
     },
   });
+
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
       console.log(user.uid);
       console.log(user);
+      console.log(user.email);
+      console.log(auth);
       setDoc(doc(db, "users", user.uid), {
         name: name.value,
         email: user.email,
-        country: "USA",
         todos: {},
       });
 
@@ -311,43 +315,11 @@ const signup = async (email, password) => {
     });
 };
 
-// const signup = async () => {
-//   Swal.fire({
-//     title: "Loading",
-//     allowOutsideClick: false,
-//     didOpen: () => {
-//       Swal.showLoading();
-//     },
-//   });
-//   await axios
-//     .post("https://vutopi-db.vercel.app/user", {
-//       email: email.value,
-//       password: password.value,
-//       name: name.value,
-//     })
-//     .then(async (results) => {
-//       await axios
-//         .post("https://vutopi-db.vercel.app/todos", {
-//           userId: results.data.id,
-//         })
-//         .then((results) => {
-//           Swal.fire({
-//             icon: "success",
-//             title: "Kamu berhasil mendaftar",
-//             text: "Silahkan login untuk melanjutkan",
-//           });
-//           router.push({ name: "Login" });
-//         })
-//         .catch((err) => {
-//           console.log(err.message);
-//         });
-//     });
-// };
-
 onMounted(() => {
-  let user = localStorage.getItem("user");
-  if (user) {
+  if (store.isLogin) {
     router.push({ name: "Index" });
+  } else {
+    router.push({ name: "Login" });
   }
 });
 </script>

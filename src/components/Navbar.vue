@@ -58,8 +58,7 @@ const logout = async () => {
     /* Read more about isConfirmed, isDenied below */
     if (result.isConfirmed) {
       localStorage.clear();
-      router.push({ name: "Login" });
-      // location.reload();
+      location.reload();
     } else if (result.isDenied) {
       Swal.close();
     }
@@ -71,7 +70,7 @@ const capitalizedFirstLetter = (name) => {
 };
 
 onMounted(() => {
-  let user = JSON.parse(localStorage.getItem("user"));
+  let user = JSON.parse(localStorage.getItem("store"));
   name.value = capitalizedFirstLetter(user.name);
   email.value = user.email;
 });
